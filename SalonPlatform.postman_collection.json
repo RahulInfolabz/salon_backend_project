@@ -1,0 +1,292 @@
+{
+  "info": {
+    "name": "Salon Service Booking Platform",
+    "description": "Complete API collection for Salon Service Booking Platform",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [{ "key": "base_url", "value": "http://localhost:8000", "type": "string" }],
+  "item": [
+    {
+      "name": "🔐 Common",
+      "item": [
+        {
+          "name": "Signup",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/signup", "host": ["{{base_url}}"], "path": ["signup"] },
+            "body": { "mode": "raw", "raw": "{\n  \"full_name\": \"Aarav Shah\",\n  \"email\": \"aarav@gmail.com\",\n  \"password\": \"Aarav@123\",\n  \"mobile_no\": \"9900000002\",\n  \"city\": \"Ahmedabad\"\n}" }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/login", "host": ["{{base_url}}"], "path": ["login"] },
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"aarav@gmail.com\",\n  \"password\": \"Aarav@123\"\n}" }
+          }
+        },
+        {
+          "name": "Admin Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/login", "host": ["{{base_url}}"], "path": ["login"] },
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"admin@salon.com\",\n  \"password\": \"Admin@123\"\n}" }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": { "method": "GET", "url": { "raw": "{{base_url}}/logout", "host": ["{{base_url}}"], "path": ["logout"] } }
+        },
+        {
+          "name": "Session",
+          "request": { "method": "GET", "url": { "raw": "{{base_url}}/session", "host": ["{{base_url}}"], "path": ["session"] } }
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/changePassword", "host": ["{{base_url}}"], "path": ["changePassword"] },
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"aarav@gmail.com\",\n  \"newPassword\": \"NewPass@123\"\n}" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🌐 Public",
+      "item": [
+        {
+          "name": "Get All Categories",
+          "request": { "method": "GET", "url": { "raw": "{{base_url}}/categories", "host": ["{{base_url}}"], "path": ["categories"] } }
+        },
+        {
+          "name": "Get SubCategories (All)",
+          "request": { "method": "GET", "url": { "raw": "{{base_url}}/subcategories", "host": ["{{base_url}}"], "path": ["subcategories"] } }
+        },
+        {
+          "name": "Get SubCategories (Filter by Category)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/subcategories?category_id=CATEGORY_ID_HERE", "host": ["{{base_url}}"], "path": ["subcategories"], "query": [{ "key": "category_id", "value": "CATEGORY_ID_HERE" }] }
+          }
+        },
+        {
+          "name": "Get All Services",
+          "request": { "method": "GET", "url": { "raw": "{{base_url}}/services", "host": ["{{base_url}}"], "path": ["services"] } }
+        },
+        {
+          "name": "Get Services — Filter by Category",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/services?category_id=CATEGORY_ID_HERE", "host": ["{{base_url}}"], "path": ["services"], "query": [{ "key": "category_id", "value": "CATEGORY_ID_HERE" }] }
+          }
+        },
+        {
+          "name": "Get Services — Filter by SubCategory",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/services?subcategory_id=SUBCATEGORY_ID_HERE", "host": ["{{base_url}}"], "path": ["services"], "query": [{ "key": "subcategory_id", "value": "SUBCATEGORY_ID_HERE" }] }
+          }
+        },
+        {
+          "name": "Get Services — Filter by Price Range",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/services?min_price=200&max_price=1000", "host": ["{{base_url}}"], "path": ["services"], "query": [{ "key": "min_price", "value": "200" }, { "key": "max_price", "value": "1000" }] }
+          }
+        },
+        {
+          "name": "Get Service Details",
+          "request": { "method": "GET", "url": { "raw": "{{base_url}}/services/SERVICE_ID_HERE", "host": ["{{base_url}}"], "path": ["services", "SERVICE_ID_HERE"] } }
+        },
+        {
+          "name": "Get All Feedbacks",
+          "request": { "method": "GET", "url": { "raw": "{{base_url}}/feedbacks", "host": ["{{base_url}}"], "path": ["feedbacks"] } }
+        }
+      ]
+    },
+    {
+      "name": "🟢 User (Session Required)",
+      "item": [
+        {
+          "name": "Get Profile",
+          "request": { "method": "GET", "url": { "raw": "{{base_url}}/user/profile", "host": ["{{base_url}}"], "path": ["user", "profile"] } }
+        },
+        {
+          "name": "Update Profile (with image)",
+          "request": {
+            "method": "POST",
+            "url": { "raw": "{{base_url}}/user/updateProfile", "host": ["{{base_url}}"], "path": ["user", "updateProfile"] },
+            "body": { "mode": "formdata", "formdata": [{ "key": "full_name", "value": "Aarav Kumar Shah", "type": "text" }, { "key": "mobile_no", "value": "9911111111", "type": "text" }, { "key": "city", "value": "Gandhinagar", "type": "text" }, { "key": "profile_image", "src": "", "type": "file" }] }
+          }
+        },
+        {
+          "name": "Book Service",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/user/bookService", "host": ["{{base_url}}"], "path": ["user", "bookService"] },
+            "body": { "mode": "raw", "raw": "{\n  \"service_id\": \"SERVICE_ID_HERE\",\n  \"booking_date\": \"2025-12-25\",\n  \"notes\": \"Please use gentle products\"\n}" }
+          }
+        },
+        {
+          "name": "My Bookings",
+          "request": { "method": "GET", "url": { "raw": "{{base_url}}/user/myBookings", "host": ["{{base_url}}"], "path": ["user", "myBookings"] } }
+        },
+        {
+          "name": "Generate Razorpay Order ID",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/user/genOrderId", "host": ["{{base_url}}"], "path": ["user", "genOrderId"] },
+            "body": { "mode": "raw", "raw": "{\n  \"booking_id\": \"BOOKING_ID_HERE\"\n}" }
+          }
+        },
+        {
+          "name": "Verify Razorpay Payment",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/user/verifyPayment", "host": ["{{base_url}}"], "path": ["user", "verifyPayment"] },
+            "body": { "mode": "raw", "raw": "{\n  \"booking_id\": \"BOOKING_ID_HERE\",\n  \"razorpay_order_id\": \"order_XXXX\",\n  \"razorpay_payment_id\": \"pay_XXXX\",\n  \"razorpay_signature\": \"signature_XXXX\"\n}" }
+          }
+        },
+        {
+          "name": "Add Feedback",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/user/addFeedback", "host": ["{{base_url}}"], "path": ["user", "addFeedback"] },
+            "body": { "mode": "raw", "raw": "{\n  \"service_id\": \"SERVICE_ID_HERE\",\n  \"feedback_message\": \"Excellent service! Very professional staff.\",\n  \"rating\": 5\n}" }
+          }
+        },
+        {
+          "name": "Add General Inquiry",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/user/addGeneralInquiry", "host": ["{{base_url}}"], "path": ["user", "addGeneralInquiry"] },
+            "body": { "mode": "raw", "raw": "{\n  \"inquiry_subject\": \"Bridal Package\",\n  \"inquiry_message\": \"Can you share details about bridal packages available?\"\n}" }
+          }
+        },
+        {
+          "name": "My General Inquiries",
+          "request": { "method": "GET", "url": { "raw": "{{base_url}}/user/myGeneralInquiries", "host": ["{{base_url}}"], "path": ["user", "myGeneralInquiries"] } }
+        }
+      ]
+    },
+    {
+      "name": "🔴 Admin (Session Required)",
+      "item": [
+        {
+          "name": "Get All Users",
+          "request": { "method": "GET", "url": { "raw": "{{base_url}}/admin/users", "host": ["{{base_url}}"], "path": ["admin", "users"] } }
+        },
+        {
+          "name": "Add Category (with image)",
+          "request": {
+            "method": "POST",
+            "url": { "raw": "{{base_url}}/admin/addCategory", "host": ["{{base_url}}"], "path": ["admin", "addCategory"] },
+            "body": { "mode": "formdata", "formdata": [{ "key": "category_name", "value": "Hair", "type": "text" }, { "key": "category_description", "value": "Complete hair care services", "type": "text" }, { "key": "category_image", "src": "", "type": "file" }] }
+          }
+        },
+        {
+          "name": "Update Category (with image)",
+          "request": {
+            "method": "POST",
+            "url": { "raw": "{{base_url}}/admin/updateCategory", "host": ["{{base_url}}"], "path": ["admin", "updateCategory"] },
+            "body": { "mode": "formdata", "formdata": [{ "key": "id", "value": "CATEGORY_ID_HERE", "type": "text" }, { "key": "category_name", "value": "Hair Care", "type": "text" }, { "key": "status", "value": "Active", "type": "text" }, { "key": "category_image", "src": "", "type": "file" }] }
+          }
+        },
+        {
+          "name": "Delete Category",
+          "request": { "method": "GET", "url": { "raw": "{{base_url}}/admin/deleteCategory/CATEGORY_ID_HERE", "host": ["{{base_url}}"], "path": ["admin", "deleteCategory", "CATEGORY_ID_HERE"] } }
+        },
+        {
+          "name": "Get All Categories (Admin)",
+          "request": { "method": "GET", "url": { "raw": "{{base_url}}/admin/categories", "host": ["{{base_url}}"], "path": ["admin", "categories"] } }
+        },
+        {
+          "name": "Add SubCategory (with image)",
+          "request": {
+            "method": "POST",
+            "url": { "raw": "{{base_url}}/admin/addSubCategory", "host": ["{{base_url}}"], "path": ["admin", "addSubCategory"] },
+            "body": { "mode": "formdata", "formdata": [{ "key": "category_id", "value": "CATEGORY_ID_HERE", "type": "text" }, { "key": "subcategory_name", "value": "Haircut", "type": "text" }, { "key": "subcategory_description", "value": "Precision haircuts for all styles", "type": "text" }, { "key": "subcategory_image", "src": "", "type": "file" }] }
+          }
+        },
+        {
+          "name": "Update SubCategory (with image)",
+          "request": {
+            "method": "POST",
+            "url": { "raw": "{{base_url}}/admin/updateSubCategory", "host": ["{{base_url}}"], "path": ["admin", "updateSubCategory"] },
+            "body": { "mode": "formdata", "formdata": [{ "key": "id", "value": "SUBCATEGORY_ID_HERE", "type": "text" }, { "key": "subcategory_name", "value": "Haircut & Style", "type": "text" }, { "key": "status", "value": "Active", "type": "text" }, { "key": "subcategory_image", "src": "", "type": "file" }] }
+          }
+        },
+        {
+          "name": "Delete SubCategory",
+          "request": { "method": "GET", "url": { "raw": "{{base_url}}/admin/deleteSubCategory/SUBCATEGORY_ID_HERE", "host": ["{{base_url}}"], "path": ["admin", "deleteSubCategory", "SUBCATEGORY_ID_HERE"] } }
+        },
+        {
+          "name": "Get All SubCategories (Admin)",
+          "request": { "method": "GET", "url": { "raw": "{{base_url}}/admin/subcategories", "host": ["{{base_url}}"], "path": ["admin", "subcategories"] } }
+        },
+        {
+          "name": "Add Service (with image)",
+          "request": {
+            "method": "POST",
+            "url": { "raw": "{{base_url}}/admin/addService", "host": ["{{base_url}}"], "path": ["admin", "addService"] },
+            "body": { "mode": "formdata", "formdata": [{ "key": "category_id", "value": "CATEGORY_ID_HERE", "type": "text" }, { "key": "subcategory_id", "value": "SUBCATEGORY_ID_HERE", "type": "text" }, { "key": "service_name", "value": "Men Haircut", "type": "text" }, { "key": "service_description", "value": "Classic men haircut with wash", "type": "text" }, { "key": "price", "value": "299", "type": "text" }, { "key": "duration_mins", "value": "30", "type": "text" }, { "key": "service_image", "src": "", "type": "file" }] }
+          }
+        },
+        {
+          "name": "Update Service (with image)",
+          "request": {
+            "method": "POST",
+            "url": { "raw": "{{base_url}}/admin/updateService", "host": ["{{base_url}}"], "path": ["admin", "updateService"] },
+            "body": { "mode": "formdata", "formdata": [{ "key": "id", "value": "SERVICE_ID_HERE", "type": "text" }, { "key": "service_name", "value": "Men Haircut Premium", "type": "text" }, { "key": "price", "value": "349", "type": "text" }, { "key": "status", "value": "Active", "type": "text" }, { "key": "service_image", "src": "", "type": "file" }] }
+          }
+        },
+        {
+          "name": "Delete Service",
+          "request": { "method": "GET", "url": { "raw": "{{base_url}}/admin/deleteService/SERVICE_ID_HERE", "host": ["{{base_url}}"], "path": ["admin", "deleteService", "SERVICE_ID_HERE"] } }
+        },
+        {
+          "name": "Get All Services (Admin)",
+          "request": { "method": "GET", "url": { "raw": "{{base_url}}/admin/services", "host": ["{{base_url}}"], "path": ["admin", "services"] } }
+        },
+        {
+          "name": "Get All Bookings",
+          "request": { "method": "GET", "url": { "raw": "{{base_url}}/admin/bookings", "host": ["{{base_url}}"], "path": ["admin", "bookings"] } }
+        },
+        {
+          "name": "Update Booking (Assign Time + Approve)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/admin/updateBooking", "host": ["{{base_url}}"], "path": ["admin", "updateBooking"] },
+            "body": { "mode": "raw", "raw": "{\n  \"id\": \"BOOKING_ID_HERE\",\n  \"time_slot\": \"10:00 AM\",\n  \"booking_status\": \"Approved\"\n}" }
+          }
+        },
+        {
+          "name": "Get All Payments",
+          "request": { "method": "GET", "url": { "raw": "{{base_url}}/admin/payments", "host": ["{{base_url}}"], "path": ["admin", "payments"] } }
+        },
+        {
+          "name": "Get All Feedbacks (Admin)",
+          "request": { "method": "GET", "url": { "raw": "{{base_url}}/admin/feedbacks", "host": ["{{base_url}}"], "path": ["admin", "feedbacks"] } }
+        },
+        {
+          "name": "Get All Inquiries",
+          "request": { "method": "GET", "url": { "raw": "{{base_url}}/admin/inquiries", "host": ["{{base_url}}"], "path": ["admin", "inquiries"] } }
+        },
+        {
+          "name": "Close Inquiry",
+          "request": { "method": "POST", "url": { "raw": "{{base_url}}/admin/closeInquiry/INQUIRY_ID_HERE", "host": ["{{base_url}}"], "path": ["admin", "closeInquiry", "INQUIRY_ID_HERE"] } }
+        }
+      ]
+    }
+  ]
+}

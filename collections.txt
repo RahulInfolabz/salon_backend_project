@@ -1,0 +1,45 @@
+====================================================
+  SALON SERVICE PLATFORM — MongoDB Collection Names
+====================================================
+
+Database Name : salon_platform
+
+Collections:
+1. users
+2. service_categories
+3. service_subcategories
+4. services
+5. bookings
+6. payments
+7. feedbacks
+8. general_inquiries
+
+====================================================
+  HOW TO RUN SEED DATA
+====================================================
+
+Step 1: Make sure .env has correct MONGO_URI
+Step 2: Run the following command:
+        node seed.js
+
+====================================================
+  RAZORPAY SETUP
+====================================================
+
+Step 1: Create account at https://razorpay.com
+Step 2: Get Key ID and Key Secret from Dashboard
+Step 3: Add to .env:
+        RAZORPAY_KEY_ID=your_key_id
+        RAZORPAY_KEY_SECRET=your_key_secret
+
+====================================================
+  UPLOADS FOLDER STRUCTURE
+====================================================
+
+uploads/
+├── categories/     → Service category images
+├── subcategories/  → Service subcategory images
+├── services/       → Service images
+└── profiles/       → User profile images
+
+====================================================
