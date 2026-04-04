@@ -2,8 +2,10 @@ const connectDB = require("../../db/dbConnect");
 
 async function GetAdminSubCategories(req, res) {
   try {
-    const admin = req.session.user;
-    if (!admin || admin.session.role !== "Admin") {
+    const { role } = req.query;
+
+    // ✅ Authorization (role from frontend)
+    if (role !== "Admin") {
       return res.status(401).json({
         success: false,
         message: "Unauthorized access",
@@ -11,8 +13,10 @@ async function GetAdminSubCategories(req, res) {
     }
 
     const db = await connectDB();
-    const subcategories = await db
-      .collection("service_subcategories")
+    const collection = db.collection("service_subcategories");
+
+    // ✅ Aggregation
+    const subcategories = await collection
       .aggregate([
         {
           $lookup: {
@@ -23,6 +27,7 @@ async function GetAdminSubCategories(req, res) {
           },
         },
         { $unwind: { path: "$category", preserveNullAndEmptyArrays: true } },
+
         { $sort: { created_at: -1 } },
       ])
       .toArray();
@@ -32,8 +37,10 @@ async function GetAdminSubCategories(req, res) {
       message: "Subcategories fetched successfully",
       data: subcategories,
     });
+
   } catch (error) {
     console.error("admin/GetSubCategories.js: ", error);
+
     return res.status(500).json({
       success: false,
       message: "Internal server error",

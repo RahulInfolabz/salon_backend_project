@@ -2,8 +2,10 @@ const connectDB = require("../../db/dbConnect");
 
 async function GetInquiries(req, res) {
   try {
-    const admin = req.session.user;
-    if (!admin || admin.session.role !== "Admin") {
+    const { role } = req.query;
+
+    // ✅ Authorization (role from frontend)
+    if (role !== "Admin") {
       return res.status(401).json({
         success: false,
         message: "Unauthorized access",
@@ -11,8 +13,10 @@ async function GetInquiries(req, res) {
     }
 
     const db = await connectDB();
-    const inquiries = await db
-      .collection("general_inquiries")
+    const collection = db.collection("general_inquiries");
+
+    // ✅ Aggregation
+    const inquiries = await collection
       .aggregate([
         {
           $lookup: {
@@ -23,7 +27,10 @@ async function GetInquiries(req, res) {
           },
         },
         { $unwind: { path: "$user", preserveNullAndEmptyArrays: true } },
+
+        // ✅ Remove sensitive data
         { $project: { "user.password": 0 } },
+
         { $sort: { inquiry_date: -1 } },
       ])
       .toArray();
@@ -33,8 +40,10 @@ async function GetInquiries(req, res) {
       message: "Inquiries fetched successfully",
       data: inquiries,
     });
+
   } catch (error) {
     console.error("GetInquiries.js: ", error);
+
     return res.status(500).json({
       success: false,
       message: "Internal server error",

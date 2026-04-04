@@ -3,20 +3,19 @@ const connectDB = require("../../db/dbConnect");
 
 async function AddFeedback(req, res) {
   try {
-    const user = req.session.user;
-    if (!user || !user.isAuth || user.session.role !== "User") {
-      return res.status(401).json({
+    const { user_id, service_id, feedback_message, rating } = req.body;
+
+    if (!user_id || !service_id || !feedback_message || !rating) {
+      return res.status(400).json({
         success: false,
-        message: "Unauthorized access",
+        message: "User ID, Service ID, feedback message and rating are required",
       });
     }
 
-    const { service_id, feedback_message, rating } = req.body;
-
-    if (!service_id || !feedback_message || !rating) {
+    if (!ObjectId.isValid(user_id)) {
       return res.status(400).json({
         success: false,
-        message: "Service ID, feedback message and rating are required",
+        message: "Invalid user ID",
       });
     }
 
@@ -38,7 +37,7 @@ async function AddFeedback(req, res) {
     const collection = db.collection("feedbacks");
 
     await collection.insertOne({
-      user_id: new ObjectId(user.session._id),
+      user_id: new ObjectId(user_id),
       service_id: new ObjectId(service_id),
       feedback_message,
       rating: parseInt(rating),

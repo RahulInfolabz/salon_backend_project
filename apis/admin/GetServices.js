@@ -2,8 +2,10 @@ const connectDB = require("../../db/dbConnect");
 
 async function GetAdminServices(req, res) {
   try {
-    const admin = req.session.user;
-    if (!admin || admin.session.role !== "Admin") {
+    const { role } = req.query;
+
+    // ✅ Authorization (role from frontend)
+    if (role !== "Admin") {
       return res.status(401).json({
         success: false,
         message: "Unauthorized access",
@@ -11,8 +13,10 @@ async function GetAdminServices(req, res) {
     }
 
     const db = await connectDB();
-    const services = await db
-      .collection("services")
+    const collection = db.collection("services");
+
+    // ✅ Aggregation
+    const services = await collection
       .aggregate([
         {
           $lookup: {
@@ -23,6 +27,7 @@ async function GetAdminServices(req, res) {
           },
         },
         { $unwind: { path: "$category", preserveNullAndEmptyArrays: true } },
+
         {
           $lookup: {
             from: "service_subcategories",
@@ -32,6 +37,7 @@ async function GetAdminServices(req, res) {
           },
         },
         { $unwind: { path: "$subcategory", preserveNullAndEmptyArrays: true } },
+
         { $sort: { created_at: -1 } },
       ])
       .toArray();
@@ -41,8 +47,10 @@ async function GetAdminServices(req, res) {
       message: "Services fetched successfully",
       data: services,
     });
+
   } catch (error) {
     console.error("admin/GetServices.js: ", error);
+
     return res.status(500).json({
       success: false,
       message: "Internal server error",

@@ -3,15 +3,8 @@ const connectDB = require("../../db/dbConnect");
 
 async function AddService(req, res) {
   try {
-    const admin = req.session.user;
-    if (!admin || admin.session.role !== "Admin") {
-      return res.status(401).json({
-        success: false,
-        message: "Unauthorized access",
-      });
-    }
-
     const {
+      role,
       category_id,
       subcategory_id,
       service_name,
@@ -20,6 +13,15 @@ async function AddService(req, res) {
       duration_mins,
     } = req.body;
 
+    // ✅ Authorization (role from frontend)
+    if (role !== "Admin") {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized access",
+      });
+    }
+
+    // ✅ Required validation
     if (
       !category_id ||
       !subcategory_id ||
@@ -34,6 +36,7 @@ async function AddService(req, res) {
       });
     }
 
+    // ✅ ObjectId validation
     if (!ObjectId.isValid(category_id) || !ObjectId.isValid(subcategory_id)) {
       return res.status(400).json({
         success: false,
@@ -42,11 +45,15 @@ async function AddService(req, res) {
     }
 
     const db = await connectDB();
+    const collection = db.collection("services");
+
+    // ✅ Handle image
     const serviceImage = req.file
       ? `/uploads/services/${req.file.filename}`
       : "";
 
-    await db.collection("services").insertOne({
+    // ✅ Insert service
+    await collection.insertOne({
       category_id: new ObjectId(category_id),
       subcategory_id: new ObjectId(subcategory_id),
       service_name,
@@ -62,8 +69,10 @@ async function AddService(req, res) {
       success: true,
       message: "Service added successfully",
     });
+
   } catch (error) {
     console.error("AddService.js: ", error);
+
     return res.status(500).json({
       success: false,
       message: "Internal server error",

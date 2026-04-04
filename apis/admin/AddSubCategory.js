@@ -3,16 +3,17 @@ const connectDB = require("../../db/dbConnect");
 
 async function AddSubCategory(req, res) {
   try {
-    const admin = req.session.user;
-    if (!admin || admin.session.role !== "Admin") {
+    const { role, category_id, subcategory_name, subcategory_description } = req.body;
+
+    // ✅ Authorization (role from frontend)
+    if (role !== "Admin") {
       return res.status(401).json({
         success: false,
         message: "Unauthorized access",
       });
     }
 
-    const { category_id, subcategory_name, subcategory_description } = req.body;
-
+    // ✅ Required validation
     if (!category_id || !subcategory_name || !subcategory_description) {
       return res.status(400).json({
         success: false,
@@ -20,6 +21,7 @@ async function AddSubCategory(req, res) {
       });
     }
 
+    // ✅ ObjectId validation
     if (!ObjectId.isValid(category_id)) {
       return res.status(400).json({
         success: false,
@@ -29,6 +31,7 @@ async function AddSubCategory(req, res) {
 
     const db = await connectDB();
 
+    // ✅ Check category exists
     const categoryExists = await db
       .collection("service_categories")
       .findOne({ _id: new ObjectId(category_id) });
@@ -40,11 +43,15 @@ async function AddSubCategory(req, res) {
       });
     }
 
+    const collection = db.collection("service_subcategories");
+
+    // ✅ Handle image
     const subcategoryImage = req.file
       ? `/uploads/subcategories/${req.file.filename}`
       : "";
 
-    await db.collection("service_subcategories").insertOne({
+    // ✅ Insert subcategory
+    await collection.insertOne({
       category_id: new ObjectId(category_id),
       subcategory_name,
       subcategory_description,
@@ -57,8 +64,10 @@ async function AddSubCategory(req, res) {
       success: true,
       message: "Subcategory added successfully",
     });
+
   } catch (error) {
     console.error("AddSubCategory.js: ", error);
+
     return res.status(500).json({
       success: false,
       message: "Internal server error",

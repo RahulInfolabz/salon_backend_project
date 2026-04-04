@@ -9,29 +9,38 @@ const razorpay = new Razorpay({
 
 async function GenOrderId(req, res) {
   try {
-    const user = req.session.user;
-    if (!user || !user.isAuth || user.session.role !== "User") {
-      return res.status(401).json({
+    const { user_id, booking_id } = req.body;
+
+    // ✅ Required validation
+    if (!user_id || !booking_id) {
+      return res.status(400).json({
         success: false,
-        message: "Unauthorized access",
+        message: "User ID and booking ID are required",
       });
     }
 
-    const { booking_id } = req.body;
-
-    if (!booking_id || !ObjectId.isValid(booking_id)) {
+    // ✅ ObjectId validation
+    if (!ObjectId.isValid(user_id)) {
       return res.status(400).json({
         success: false,
-        message: "Valid booking ID is required",
+        message: "Invalid user ID",
+      });
+    }
+
+    if (!ObjectId.isValid(booking_id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid booking ID",
       });
     }
 
     const db = await connectDB();
     const bookingCollection = db.collection("bookings");
 
+    // ✅ Check booking exists for user
     const booking = await bookingCollection.findOne({
       _id: new ObjectId(booking_id),
-      user_id: new ObjectId(user.session._id),
+      user_id: new ObjectId(user_id),
     });
 
     if (!booking) {
@@ -41,6 +50,7 @@ async function GenOrderId(req, res) {
       });
     }
 
+    // ✅ Check payment already done
     if (booking.payment_status === "Paid") {
       return res.status(400).json({
         success: false,
@@ -48,13 +58,14 @@ async function GenOrderId(req, res) {
       });
     }
 
-    // Create Razorpay order
+    // ✅ Create Razorpay order
     const order = await razorpay.orders.create({
-      amount: Math.round(booking.total_amount * 100), // in paise
+      amount: Math.round(booking.total_amount * 100), // paise
       currency: "INR",
       receipt: `receipt_${booking_id}`,
     });
 
+    // ✅ Success response
     return res.status(200).json({
       success: true,
       message: "Order created successfully",
@@ -65,8 +76,11 @@ async function GenOrderId(req, res) {
         booking_id: booking_id,
       },
     });
+
   } catch (error) {
     console.error("GenOrderId.js: ", error);
+
+    // ❌ Error response
     return res.status(500).json({
       success: false,
       message: "Internal server error",

@@ -2,8 +2,10 @@ const connectDB = require("../../db/dbConnect");
 
 async function GetAdminCategories(req, res) {
   try {
-    const admin = req.session.user;
-    if (!admin || admin.session.role !== "Admin") {
+    const { role } = req.query;
+
+    // ✅ Authorization (role from frontend)
+    if (role !== "Admin") {
       return res.status(401).json({
         success: false,
         message: "Unauthorized access",
@@ -11,8 +13,10 @@ async function GetAdminCategories(req, res) {
     }
 
     const db = await connectDB();
-    const categories = await db
-      .collection("service_categories")
+    const collection = db.collection("service_categories");
+
+    // ✅ Fetch categories
+    const categories = await collection
       .find({})
       .sort({ created_at: -1 })
       .toArray();
@@ -22,8 +26,10 @@ async function GetAdminCategories(req, res) {
       message: "Categories fetched successfully",
       data: categories,
     });
+
   } catch (error) {
     console.error("admin/GetCategories.js: ", error);
+
     return res.status(500).json({
       success: false,
       message: "Internal server error",

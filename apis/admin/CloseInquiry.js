@@ -3,16 +3,18 @@ const connectDB = require("../../db/dbConnect");
 
 async function CloseInquiry(req, res) {
   try {
-    const admin = req.session.user;
-    if (!admin || admin.session.role !== "Admin") {
+    const { role } = req.body;
+    const { id } = req.params;
+
+    // ✅ Authorization (role from frontend)
+    if (role !== "Admin") {
       return res.status(401).json({
         success: false,
         message: "Unauthorized access",
       });
     }
 
-    const { id } = req.params;
-
+    // ✅ ObjectId validation
     if (!ObjectId.isValid(id)) {
       return res.status(400).json({
         success: false,
@@ -21,12 +23,18 @@ async function CloseInquiry(req, res) {
     }
 
     const db = await connectDB();
-    const result = await db
-      .collection("general_inquiries")
-      .updateOne(
-        { _id: new ObjectId(id) },
-        { $set: { status: "Closed", updated_at: new Date() } }
-      );
+    const collection = db.collection("general_inquiries");
+
+    // ✅ Update inquiry status
+    const result = await collection.updateOne(
+      { _id: new ObjectId(id) },
+      {
+        $set: {
+          status: "Closed",
+          updated_at: new Date(),
+        },
+      }
+    );
 
     if (result.matchedCount === 0) {
       return res.status(404).json({
@@ -39,8 +47,10 @@ async function CloseInquiry(req, res) {
       success: true,
       message: "Inquiry closed successfully",
     });
+
   } catch (error) {
     console.error("CloseInquiry.js: ", error);
+
     return res.status(500).json({
       success: false,
       message: "Internal server error",

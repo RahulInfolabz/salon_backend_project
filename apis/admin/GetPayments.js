@@ -2,8 +2,10 @@ const connectDB = require("../../db/dbConnect");
 
 async function GetPayments(req, res) {
   try {
-    const admin = req.session.user;
-    if (!admin || admin.session.role !== "Admin") {
+    const { role } = req.query;
+
+    // ✅ Authorization (role from frontend)
+    if (role !== "Admin") {
       return res.status(401).json({
         success: false,
         message: "Unauthorized access",
@@ -11,8 +13,10 @@ async function GetPayments(req, res) {
     }
 
     const db = await connectDB();
-    const payments = await db
-      .collection("payments")
+    const collection = db.collection("payments");
+
+    // ✅ Aggregation
+    const payments = await collection
       .aggregate([
         {
           $lookup: {
@@ -23,6 +27,7 @@ async function GetPayments(req, res) {
           },
         },
         { $unwind: { path: "$user", preserveNullAndEmptyArrays: true } },
+
         {
           $lookup: {
             from: "bookings",
@@ -32,6 +37,7 @@ async function GetPayments(req, res) {
           },
         },
         { $unwind: { path: "$booking", preserveNullAndEmptyArrays: true } },
+
         {
           $lookup: {
             from: "services",
@@ -41,7 +47,10 @@ async function GetPayments(req, res) {
           },
         },
         { $unwind: { path: "$service", preserveNullAndEmptyArrays: true } },
+
+        // ✅ Remove sensitive data
         { $project: { "user.password": 0 } },
+
         { $sort: { payment_date: -1 } },
       ])
       .toArray();
@@ -51,8 +60,10 @@ async function GetPayments(req, res) {
       message: "Payments fetched successfully",
       data: payments,
     });
+
   } catch (error) {
     console.error("GetPayments.js: ", error);
+
     return res.status(500).json({
       success: false,
       message: "Internal server error",

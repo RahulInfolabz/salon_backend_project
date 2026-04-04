@@ -3,16 +3,17 @@ const connectDB = require("../../db/dbConnect");
 
 async function UpdateCategory(req, res) {
   try {
-    const admin = req.session.user;
-    if (!admin || admin.session.role !== "Admin") {
+    const { role, id, category_name, category_description, status } = req.body;
+
+    // ✅ Authorization (role from frontend)
+    if (role !== "Admin") {
       return res.status(401).json({
         success: false,
         message: "Unauthorized access",
       });
     }
 
-    const { id, category_name, category_description, status } = req.body;
-
+    // ✅ ID validation
     if (!id || !ObjectId.isValid(id)) {
       return res.status(400).json({
         success: false,
@@ -20,15 +21,29 @@ async function UpdateCategory(req, res) {
       });
     }
 
+    // ✅ At least one field check
+    if (!category_name && !category_description && !status && !req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "At least one field is required to update",
+      });
+    }
+
     const db = await connectDB();
     const collection = db.collection("service_categories");
 
+    // ✅ Prepare update fields
     const updateFields = { updated_at: new Date() };
+
     if (category_name) updateFields.category_name = category_name;
     if (category_description) updateFields.category_description = category_description;
     if (status) updateFields.status = status;
-    if (req.file) updateFields.category_image = `/uploads/categories/${req.file.filename}`;
 
+    if (req.file) {
+      updateFields.category_image = `/uploads/categories/${req.file.filename}`;
+    }
+
+    // ✅ Update category
     const result = await collection.updateOne(
       { _id: new ObjectId(id) },
       { $set: updateFields }
@@ -45,8 +60,10 @@ async function UpdateCategory(req, res) {
       success: true,
       message: "Category updated successfully",
     });
+
   } catch (error) {
     console.error("UpdateCategory.js: ", error);
+
     return res.status(500).json({
       success: false,
       message: "Internal server error",

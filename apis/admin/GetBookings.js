@@ -2,8 +2,10 @@ const connectDB = require("../../db/dbConnect");
 
 async function GetBookings(req, res) {
   try {
-    const admin = req.session.user;
-    if (!admin || admin.session.role !== "Admin") {
+    const { role } = req.query;
+
+    // ✅ Authorization (role from frontend)
+    if (role !== "Admin") {
       return res.status(401).json({
         success: false,
         message: "Unauthorized access",
@@ -11,8 +13,10 @@ async function GetBookings(req, res) {
     }
 
     const db = await connectDB();
-    const bookings = await db
-      .collection("bookings")
+    const collection = db.collection("bookings");
+
+    // ✅ Aggregation
+    const bookings = await collection
       .aggregate([
         {
           $lookup: {
@@ -23,6 +27,7 @@ async function GetBookings(req, res) {
           },
         },
         { $unwind: { path: "$user", preserveNullAndEmptyArrays: true } },
+
         {
           $lookup: {
             from: "services",
@@ -32,7 +37,10 @@ async function GetBookings(req, res) {
           },
         },
         { $unwind: { path: "$service", preserveNullAndEmptyArrays: true } },
+
+        // ✅ Remove sensitive data
         { $project: { "user.password": 0 } },
+
         { $sort: { created_at: -1 } },
       ])
       .toArray();
@@ -42,8 +50,10 @@ async function GetBookings(req, res) {
       message: "Bookings fetched successfully",
       data: bookings,
     });
+
   } catch (error) {
     console.error("GetBookings.js: ", error);
+
     return res.status(500).json({
       success: false,
       message: "Internal server error",

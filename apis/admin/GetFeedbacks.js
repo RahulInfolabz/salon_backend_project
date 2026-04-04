@@ -2,8 +2,10 @@ const connectDB = require("../../db/dbConnect");
 
 async function GetAdminFeedbacks(req, res) {
   try {
-    const admin = req.session.user;
-    if (!admin || admin.session.role !== "Admin") {
+    const { role } = req.query;
+
+    // ✅ Authorization (role from frontend)
+    if (role !== "Admin") {
       return res.status(401).json({
         success: false,
         message: "Unauthorized access",
@@ -11,8 +13,10 @@ async function GetAdminFeedbacks(req, res) {
     }
 
     const db = await connectDB();
-    const feedbacks = await db
-      .collection("feedbacks")
+    const collection = db.collection("feedbacks");
+
+    // ✅ Aggregation
+    const feedbacks = await collection
       .aggregate([
         {
           $lookup: {
@@ -23,6 +27,7 @@ async function GetAdminFeedbacks(req, res) {
           },
         },
         { $unwind: { path: "$user", preserveNullAndEmptyArrays: true } },
+
         {
           $lookup: {
             from: "services",
@@ -32,7 +37,10 @@ async function GetAdminFeedbacks(req, res) {
           },
         },
         { $unwind: { path: "$service", preserveNullAndEmptyArrays: true } },
+
+        // ✅ Remove sensitive data
         { $project: { "user.password": 0 } },
+
         { $sort: { feedback_date: -1 } },
       ])
       .toArray();
@@ -42,8 +50,10 @@ async function GetAdminFeedbacks(req, res) {
       message: "Feedbacks fetched successfully",
       data: feedbacks,
     });
+
   } catch (error) {
     console.error("admin/GetFeedbacks.js: ", error);
+
     return res.status(500).json({
       success: false,
       message: "Internal server error",

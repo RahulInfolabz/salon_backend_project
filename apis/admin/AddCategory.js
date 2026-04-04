@@ -2,16 +2,17 @@ const connectDB = require("../../db/dbConnect");
 
 async function AddCategory(req, res) {
   try {
-    const admin = req.session.user;
-    if (!admin || admin.session.role !== "Admin") {
+    const { role, category_name, category_description } = req.body;
+
+    // ✅ Authorization (role check from frontend)
+    if (role !== "Admin") {
       return res.status(401).json({
         success: false,
         message: "Unauthorized access",
       });
     }
 
-    const { category_name, category_description } = req.body;
-
+    // ✅ Required validation
     if (!category_name || !category_description) {
       return res.status(400).json({
         success: false,
@@ -22,10 +23,12 @@ async function AddCategory(req, res) {
     const db = await connectDB();
     const collection = db.collection("service_categories");
 
+    // ✅ Handle image
     const categoryImage = req.file
       ? `/uploads/categories/${req.file.filename}`
       : "";
 
+    // ✅ Insert category
     await collection.insertOne({
       category_name,
       category_description,
@@ -38,8 +41,10 @@ async function AddCategory(req, res) {
       success: true,
       message: "Category added successfully",
     });
+
   } catch (error) {
     console.error("AddCategory.js: ", error);
+
     return res.status(500).json({
       success: false,
       message: "Internal server error",
