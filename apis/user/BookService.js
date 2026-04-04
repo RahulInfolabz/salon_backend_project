@@ -46,7 +46,7 @@ async function BookService(req, res) {
     }
 
     // ✅ Insert booking
-    await bookingCollection.insertOne({
+    let booking = await bookingCollection.insertOne({
       user_id: new ObjectId(user_id),
       service_id: new ObjectId(service_id),
       booking_date: new Date(booking_date),
@@ -63,6 +63,7 @@ async function BookService(req, res) {
     return res.status(201).json({
       success: true,
       message: "Service booked successfully. Time slot will be assigned by admin.",
+      booking: booking.insertedId
     });
 
   } catch (error) {
