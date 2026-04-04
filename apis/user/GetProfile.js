@@ -3,11 +3,11 @@ const connectDB = require("../../db/dbConnect");
 
 async function GetProfile(req, res) {
   try {
-    const { userId } = req.query;
+    const { user_id } = req.query;
 
     const db = await connectDB();
     const profile = await db.collection("users").findOne(
-      { _id: new ObjectId(userId) },
+      { _id: new ObjectId(user_id) },
       { projection: { password: 0 } }
     );
 
