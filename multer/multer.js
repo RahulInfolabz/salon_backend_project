@@ -29,24 +29,12 @@ const profileStorage = multer.diskStorage({
     cb(null, `${Date.now()}-${file.originalname.replace(/\s+/g, "_")}`),
 });
 
-// ── File Filter (images only) ─────────────────────────────────────────────────
-const imageFilter = (req, file, cb) => {
-  const allowedTypes = /jpeg|jpg|png|webp/;
-  const isValid = allowedTypes.test(
-    path.extname(file.originalname).toLowerCase()
-  );
-  if (isValid) {
-    cb(null, true);
-  } else {
-    cb(new Error("Only image files are allowed (jpeg, jpg, png, webp)"));
-  }
-};
 
 // ── Exports ───────────────────────────────────────────────────────────────────
-const categoryUpload = multer({ storage: categoryStorage, fileFilter: imageFilter });
-const subCategoryUpload = multer({ storage: subCategoryStorage, fileFilter: imageFilter });
-const serviceUpload = multer({ storage: serviceStorage, fileFilter: imageFilter });
-const profileUpload = multer({ storage: profileStorage, fileFilter: imageFilter });
+const categoryUpload = multer({ storage: categoryStorage });
+const subCategoryUpload = multer({ storage: subCategoryStorage });
+const serviceUpload = multer({ storage: serviceStorage });
+const profileUpload = multer({ storage: profileStorage });
 
 module.exports = {
   categoryUpload,
