@@ -7,7 +7,12 @@ async function DeleteSubCategory(req, res) {
     const { id } = req.params;
 
     // ✅ Authorization (role from frontend)
-    
+    if (role !== "Admin") {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized access",
+      });
+    }
 
     // ✅ ObjectId validation
     if (!ObjectId.isValid(id)) {

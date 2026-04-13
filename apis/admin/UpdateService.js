@@ -16,7 +16,12 @@ async function UpdateService(req, res) {
     } = req.body;
 
     // ✅ Authorization (role from frontend)
-    
+    if (role !== "Admin") {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized access",
+      });
+    }
 
     // ✅ ID validation
     if (!id || !ObjectId.isValid(id)) {
