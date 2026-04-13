@@ -6,12 +6,7 @@ async function AddSubCategory(req, res) {
     const { role, category_id, subcategory_name, subcategory_description } = req.body;
 
     // ✅ Authorization (role from frontend)
-    if (role !== "Admin") {
-      return res.status(401).json({
-        success: false,
-        message: "Unauthorized access",
-      });
-    }
+    
 
     // ✅ Required validation
     if (!category_id || !subcategory_name || !subcategory_description) {

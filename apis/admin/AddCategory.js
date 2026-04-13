@@ -5,12 +5,7 @@ async function AddCategory(req, res) {
     const { role, category_name, category_description } = req.body;
 
     // ✅ Authorization (role check from frontend)
-    if (role !== "Admin") {
-      return res.status(401).json({
-        success: false,
-        message: "Unauthorized access",
-      });
-    }
+    
 
     // ✅ Required validation
     if (!category_name || !category_description) {
