@@ -1,60 +1,41 @@
 const multer = require("multer");
 const path = require("path");
-const fs = require("fs");
 
-// ── Helper: Ensure folder exists ──────────────────────────────────────────────
-const ensureDir = (dirPath) => {
-  if (!fs.existsSync(dirPath)) {
-    fs.mkdirSync(dirPath, { recursive: true });
-  }
-};
-
-// ── Base Upload Path ──────────────────────────────────────────────────────────
-const basePath = "uploads";
-
-// Ensure all folders exist
-const paths = {
-  categories: path.join(basePath, "categories"),
-  subcategories: path.join(basePath, "subcategories"),
-  services: path.join(basePath, "services"),
-  profiles: path.join(basePath, "profiles"),
-};
-
-Object.values(paths).forEach(ensureDir);
-
-// ── Common filename logic ─────────────────────────────────────────────────────
-const generateFileName = (file) => {
-  return `${Date.now()}-${file.originalname.replace(/\s+/g, "_")}`;
-};
-
-// ── Storage Configs ───────────────────────────────────────────────────────────
+// ── Storage for Category Images ───────────────────────────────────────────────
 const categoryStorage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, paths.categories),
-  filename: (req, file, cb) => cb(null, generateFileName(file)),
+  destination: (req, file, cb) => cb(null, "uploads/categories"),
+  filename: (req, file, cb) =>
+    cb(null, `${Date.now()}-${file.originalname.replace(/\s+/g, "_")}`),
 });
 
+// ── Storage for SubCategory Images ───────────────────────────────────────────
 const subCategoryStorage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, paths.subcategories),
-  filename: (req, file, cb) => cb(null, generateFileName(file)),
+  destination: (req, file, cb) => cb(null, "uploads/subcategories"),
+  filename: (req, file, cb) =>
+    cb(null, `${Date.now()}-${file.originalname.replace(/\s+/g, "_")}`),
 });
 
+// ── Storage for Service Images ────────────────────────────────────────────────
 const serviceStorage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, paths.services),
-  filename: (req, file, cb) => cb(null, generateFileName(file)),
+  destination: (req, file, cb) => cb(null, "uploads/services"),
+  filename: (req, file, cb) =>
+    cb(null, `${Date.now()}-${file.originalname.replace(/\s+/g, "_")}`),
 });
 
+// ── Storage for Profile Images ────────────────────────────────────────────────
 const profileStorage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, paths.profiles),
-  filename: (req, file, cb) => cb(null, generateFileName(file)),
+  destination: (req, file, cb) => cb(null, "uploads/profiles"),
+  filename: (req, file, cb) =>
+    cb(null, `${Date.now()}-${file.originalname.replace(/\s+/g, "_")}`),
 });
 
-// ── Upload Middlewares ────────────────────────────────────────────────────────
+
+// ── Exports ───────────────────────────────────────────────────────────────────
 const categoryUpload = multer({ storage: categoryStorage });
 const subCategoryUpload = multer({ storage: subCategoryStorage });
 const serviceUpload = multer({ storage: serviceStorage });
 const profileUpload = multer({ storage: profileStorage });
 
-// ── Exports ───────────────────────────────────────────────────────────────────
 module.exports = {
   categoryUpload,
   subCategoryUpload,
